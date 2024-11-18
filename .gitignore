@@ -1,0 +1,24 @@
+# Ignore environment variable file
+.env
+
+# Ignore Firebase Service Account Key
+config/credentials/serviceAccountKey.json
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore virtual environment folder
+venv/
+
+# Ignore database files (optional, if you don't want to track local SQLite changes)
+*.db
+*.sqlite
+
+# Ignore IDE configuration files (e.g., PyCharm)
+.idea/
+.vscode/
+
+# Ignore logs and temporary files
+*.log
+tmp/

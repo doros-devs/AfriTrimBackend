@@ -1,30 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="89a452bf-3ce3-449d-ae50-8afa5b8e8320" name="Changes" comment="" />
+    <list default="true" id="89a452bf-3ce3-449d-ae50-8afa5b8e8320" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth_middleware.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/firebase_utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/admin_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/appointment_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/barber_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/barbershop_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/client_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/invoice_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/payment_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/review_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/sale_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/service_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/upload_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/seed.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/admin_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/appointment_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/barber_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/barbershop_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/client_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/image_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/invoice_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/payment_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/review_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/sale_services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/service_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/user_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/helpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2oTN5F6H2CuTdcSAB7l5LGtgMMB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/terenceouma/PycharmProjects/AfriTrimBackend/services&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/services" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/config/credentials" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -42,5 +104,15 @@
       <updated>1730889420339</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seed.py</url>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
