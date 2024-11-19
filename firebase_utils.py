@@ -1,8 +1,6 @@
 import os
-import json
 import firebase_admin
 from firebase_admin import credentials, storage, auth
-
 
 def initialize_firebase(app):
     # Check if we are in a development or production environment
@@ -13,18 +11,26 @@ def initialize_firebase(app):
         service_account_path = 'config/credentials/serviceAccountKey.json'
         cred = credentials.Certificate(service_account_path)
     else:
-        # Load credentials from environment variable for production
-        service_account_info = os.getenv('FIREBASE_CREDENTIALS')
+        # Load credentials from environment variables for production
+        cred_dict = {
+            "type": os.getenv('FIREBASE_TYPE', 'service_account'),
+            "project_id": os.getenv('FIREBASE_PROJECT_ID'),
+            "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
+            "private_key": os.getenv('FIREBASE_PRIVATE_KEY'),
+            "client_email": os.getenv('FIREBASE_CLIENT_EMAIL'),
+            "client_id": os.getenv('FIREBASE_CLIENT_ID'),
+            "auth_uri": os.getenv('FIREBASE_AUTH_URI'),
+            "token_uri": os.getenv('FIREBASE_TOKEN_URI'),
+            "auth_provider_x509_cert_url": os.getenv('FIREBASE_AUTH_PROVIDER_X509_CERT_URL'),
+            "client_x509_cert_url": os.getenv('FIREBASE_CLIENT_X509_CERT_URL'),
+        }
 
-        if not service_account_info:
-            raise ValueError("FIREBASE_CREDENTIALS environment variable not set.")
+        # Check that all required fields are available
+        if not all(cred_dict.values()):
+            raise ValueError("One or more Firebase credential environment variables are not set.")
 
-        # Convert the JSON string from the environment variable to a dictionary
-        try:
-            cred_dict = json.loads(service_account_info)
-            cred = credentials.Certificate(cred_dict)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse FIREBASE_CREDENTIALS: {e}")
+        # Initialize Firebase with the credentials
+        cred = credentials.Certificate(cred_dict)
 
     # Initialize Firebase only if it hasn't been initialized already
     try:
@@ -37,6 +43,7 @@ def initialize_firebase(app):
 
     # Attach Firebase Storage bucket to app config
     app.config['FIREBASE_STORAGE_BUCKET'] = storage.bucket()
+
 
 
 def set_custom_claims(user_uid, claims):
