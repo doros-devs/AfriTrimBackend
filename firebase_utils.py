@@ -1,14 +1,8 @@
 import os
 import json
 import firebase_admin
-from firebase_admin import credentials, auth
-from firebase_admin import storage
+from firebase_admin import credentials, storage, auth
 
-
-import os
-import json
-import firebase_admin
-from firebase_admin import credentials, storage
 
 def initialize_firebase(app):
     # Check if we are in a development or production environment
@@ -26,13 +20,20 @@ def initialize_firebase(app):
             raise ValueError("FIREBASE_CREDENTIALS environment variable not set.")
 
         # Convert the JSON string from the environment variable to a dictionary
-        cred_dict = json.loads(service_account_info)
-        cred = credentials.Certificate(cred_dict)
+        try:
+            cred_dict = json.loads(service_account_info)
+            cred = credentials.Certificate(cred_dict)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse FIREBASE_CREDENTIALS: {e}")
 
-    # Initialize Firebase with the credentials
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET', 'afritrim-b1a83.appspot.com')
-    })
+    # Initialize Firebase only if it hasn't been initialized already
+    try:
+        firebase_admin.get_app()
+    except ValueError:
+        # If no app has been initialized yet, do so here
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET', 'afritrim-b1a83.appspot.com')
+        })
 
     # Attach Firebase Storage bucket to app config
     app.config['FIREBASE_STORAGE_BUCKET'] = storage.bucket()
