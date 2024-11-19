@@ -44,6 +44,7 @@ def create_app():
     from routes.review_routes import review_ns
     from routes.barber_routes import barber_ns
     from auth_routes import auth_ns
+    from routes.user_routes import user_ns
 
     # Register namespaces with the API
     api.add_namespace(barbershop_ns, path='/api/barbershop')
@@ -58,6 +59,7 @@ def create_app():
     api.add_namespace(review_ns, path='/api/review')
     api.add_namespace(barber_ns, path='/api/barber')
     api.add_namespace(auth_ns, path='/api/auth')
+    api.add_namespace(user_ns, path='/users')
 
     @app.after_request
     def after_request(response):
