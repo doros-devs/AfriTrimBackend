@@ -5,18 +5,31 @@ from firebase_admin import credentials, auth
 from firebase_admin import storage
 
 
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials, storage
+
 def initialize_firebase(app):
-    # Get the Firebase credentials from the environment variable
-    service_account_info = os.getenv('FIREBASE_CREDENTIALS')
+    # Check if we are in a development or production environment
+    flask_env = os.getenv('FLASK_ENV', 'production')
 
-    if not service_account_info:
-        raise ValueError("FIREBASE_CREDENTIALS environment variable not set.")
+    if flask_env == 'development':
+        # Load credentials from the service account file for development
+        service_account_path = 'config/credentials/serviceAccountKey.json'
+        cred = credentials.Certificate(service_account_path)
+    else:
+        # Load credentials from environment variable for production
+        service_account_info = os.getenv('FIREBASE_CREDENTIALS')
 
-    # Convert the JSON string from the environment variable to a dictionary
-    cred_dict = json.loads(service_account_info)
+        if not service_account_info:
+            raise ValueError("FIREBASE_CREDENTIALS environment variable not set.")
+
+        # Convert the JSON string from the environment variable to a dictionary
+        cred_dict = json.loads(service_account_info)
+        cred = credentials.Certificate(cred_dict)
 
     # Initialize Firebase with the credentials
-    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
         'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET', 'afritrim-b1a83.appspot.com')
     })
