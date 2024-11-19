@@ -1,4 +1,5 @@
 import os
+import json
 import firebase_admin
 from firebase_admin import credentials, auth
 from firebase_admin import storage
@@ -6,12 +7,19 @@ from firebase_admin import storage
 
 def initialize_firebase(app):
     # Get the Firebase credentials from the environment variable
-    service_account_path = os.getenv('FIREBASE_CREDENTIALS', 'config/credentials/serviceAccountKey.json')
+    service_account_info = os.getenv('FIREBASE_CREDENTIALS')
 
-    cred = credentials.Certificate(service_account_path)
+    if not service_account_info:
+        raise ValueError("FIREBASE_CREDENTIALS environment variable not set.")
+
+    # Convert the JSON string from the environment variable to a dictionary
+    cred_dict = json.loads(service_account_info)
+
+    # Initialize Firebase with the credentials
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET', 'gs://afritrim-b1a83.appspot.com')
-        })
+        'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET', 'afritrim-b1a83.appspot.com')
+    })
 
     # Attach Firebase Storage bucket to app config
     app.config['FIREBASE_STORAGE_BUCKET'] = storage.bucket()
