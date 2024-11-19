@@ -7,8 +7,8 @@ class Barbershop(db.Model):
     name = db.Column(db.String, nullable=False)
     admin_id = db.Column(db.String, nullable=False)  # Replaced owner_id with admin_id to reference the admin
     location = db.Column(db.String, nullable=True)
-    services = db.relationship('Service', backref=db.backref('barbershop', lazy=True), cascade="all, delete-orphan")
-    barbers = db.relationship('Barber', backref=db.backref('barbershop', lazy=True), cascade="all, delete-orphan")
+    services = db.relationship('Service', backref='barbershop', lazy=True, cascade="all, delete-orphan")
+    barbers = db.relationship('Barber', backref='barbershop', lazy=True, cascade="all, delete-orphan")
     photo_url = db.Column(db.String, nullable=True)  # URL of the barbershop image
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -17,7 +17,7 @@ class Barbershop(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "admin_id": self.admin_id,  # Replaced owner_id with admin_id
+            "admin_id": self.admin_id,
             "location": self.location,
             "photo_url": self.photo_url,
             "services": [service.to_dict() for service in self.services],
@@ -34,7 +34,7 @@ class Barber(db.Model):
     barbershop_id = db.Column(db.Integer, db.ForeignKey('barbershops.id'))
     available = db.Column(db.Boolean, default=True)
     photo_url = db.Column(db.String, nullable=True)  # URL of the barber's profile picture
-    reviews = db.relationship('Review', backref=db.backref('barber', lazy=True), cascade="all, delete-orphan")
+    reviews = db.relationship('Review', backref='barber', lazy=True)  # Removed delete-orphan
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
@@ -73,6 +73,7 @@ class Service(db.Model):
             "updated_at": self.updated_at.isoformat()
         }
 
+
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
@@ -105,7 +106,7 @@ class Payment(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "admin_id": self.admin_id,  # Replaced owner_id with admin_id
+            "admin_id": self.admin_id,
             "amount": self.amount,
             "paid_at": self.paid_at.isoformat(),
             "status": self.status,
@@ -117,12 +118,12 @@ class Sale(db.Model):
     __tablename__ = 'sales'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
-    client = db.relationship('Client', backref=db.backref('sales', lazy=True), cascade="all, delete-orphan")
+    client = db.relationship('Client', backref='sales', lazy=True)
     barbershop_id = db.Column(db.Integer, db.ForeignKey('barbershops.id'), nullable=False)
-    barbershop = db.relationship('Barbershop', backref=db.backref('sales', lazy=True), cascade="all, delete-orphan")
+    barbershop = db.relationship('Barbershop', backref='sales', lazy=True)
     invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id'), nullable=True)
+    invoice = db.relationship('Invoice', backref='sales', lazy=True)  # Removed delete-orphan
     sale_date = db.Column(db.DateTime, default=datetime.now)
-    invoice = db.relationship('Invoice', backref=db.backref('sales', lazy=True), cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
@@ -140,11 +141,11 @@ class Appointment(db.Model):
     __tablename__ = 'appointments'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
-    client = db.relationship('Client', backref=db.backref('appointments', lazy=True), cascade="all, delete-orphan")
+    client = db.relationship('Client', backref='appointments', lazy=True)
     barber_id = db.Column(db.Integer, db.ForeignKey('barbers.id'), nullable=False)
-    barber = db.relationship('Barber', backref=db.backref('appointments', lazy=True), cascade="all, delete-orphan")
+    barber = db.relationship('Barber', backref='appointments', lazy=True)
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
-    service = db.relationship('Service', backref=db.backref('appointments', lazy=True), cascade="all, delete-orphan")
+    service = db.relationship('Service', backref='appointments', lazy=True)
     appointment_time = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
@@ -166,7 +167,7 @@ class Invoice(db.Model):
     __tablename__ = 'invoices'
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
-    client = db.relationship('Client', backref=db.backref('invoices', lazy=True), cascade="all, delete-orphan")
+    client = db.relationship('Client', backref='invoices', lazy=True)
     barbershop_id = db.Column(db.Integer, db.ForeignKey('barbershops.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(50), default='Pending')
@@ -183,7 +184,7 @@ class Invoice(db.Model):
             'amount': self.amount,
             'status': self.status,
             'created_at': self.created_at.isoformat(),
-            'paid_at': self.paid
+            'paid_at': self.paid_at
         }
 
 class Client(db.Model):
