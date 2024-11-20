@@ -17,7 +17,7 @@ FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 def create_app():
     # Create the Flask app and initialize CORS
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": FRONTEND_URL }}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": [FRONTEND_URL, "http://localhost:5173"]}}, supports_credentials=True)
 
     # Configure the app using the settings from config.py
     app.config.from_object('config.Config')
