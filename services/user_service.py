@@ -5,6 +5,7 @@ from firebase_admin import auth
 
 # User Services
 
+
 def create_user(data, role):
     """
     Create a user in the database based on role (Admin, Barber, Client).
@@ -12,20 +13,28 @@ def create_user(data, role):
     try:
         if role == "admin":
             user = Admin(name=data["name"], email=data["email"], uid=data["uid"])
+            custom_claims = {"admin": True, "barber": False, "client": False}
         elif role == "barber":
-            user = Barber(name=data["name"], email=data["email"], uid=data["uid"],
-                          barbershop_id=data.get("barbershop_id"))
+            user = Barber(name=data["name"], email=data["email"], uid=data["uid"], barbershop_id=data.get("barbershop_id"))
+            custom_claims = {"admin": False, "barber": True, "client": False}
         elif role == "client":
             user = Client(name=data["name"], email=data["email"], uid=data["uid"])
+            custom_claims = {"admin": False, "barber": False, "client": True}
         else:
             raise ValueError("Invalid role provided")
 
         db.session.add(user)
         db.session.commit()
+
+        # Set custom claims for the user in Firebase
+        auth.set_custom_user_claims(data["uid"], custom_claims)
+
         return user
     except SQLAlchemyError as e:
         db.session.rollback()
         raise ValueError(f"Failed to create user due to database error: {str(e)}")
+    except Exception as e:
+        raise ValueError(f"Failed to set custom claims: {str(e)}")
 
 
 def get_user_by_uid(uid):

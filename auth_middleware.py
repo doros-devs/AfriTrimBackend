@@ -1,6 +1,7 @@
-from firebase_admin import auth
-from flask import request, jsonify
 from functools import wraps
+from flask import request, jsonify
+from firebase_admin import auth
+
 
 # Middleware function for general token verification
 def verify_token(func):
@@ -12,15 +13,27 @@ def verify_token(func):
                 return jsonify({"error": "Authentication failed", "message": "Missing Authorization header"}), 401
 
             # Extract token from the Authorization header
+            if not auth_header.startswith("Bearer "):
+                return jsonify(
+                    {"error": "Authentication failed", "message": "Invalid Authorization header format"}), 401
+
             token = auth_header.split("Bearer ")[1]
             decoded_token = auth.verify_id_token(token)
-            request.user = decoded_token  # Store user info for later use
+
+            # Check if decoded_token contains roles (custom claims)
+            decoded_token_roles = {
+                'admin': decoded_token.get('admin', False),
+                'barber': decoded_token.get('barber', False),
+                'client': decoded_token.get('client', False)
+            }
+
+            # Pass the decoded_token and its roles as arguments to the wrapped function
+            return func(decoded_token=decoded_token, decoded_token_roles=decoded_token_roles, *args, **kwargs)
         except Exception as e:
             return jsonify({"error": "Authentication failed", "message": str(e)}), 401
 
-        return func(*args, **kwargs)
-
     return wrapper
+
 
 # Decorator function for admin-only routes
 def admin_required(func):

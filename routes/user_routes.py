@@ -84,10 +84,25 @@ class UserSignupVerify(Resource):
             # Save user data based on role
             data['uid'] = uid
             user = create_user(data, role)
+
+            # Set custom claims for the user in Firebase
+            if role == "admin":
+                custom_claims = {"admin": True, "barber": False, "client": False}
+            elif role == "barber":
+                custom_claims = {"admin": False, "barber": True, "client": False}
+            elif role == "client":
+                custom_claims = {"admin": False, "barber": False, "client": True}
+            else:
+                raise ValueError("Invalid role provided")
+
+            # Assign the custom claims to the Firebase user
+            auth.set_custom_user_claims(uid, custom_claims)
+
             return {"message": "User successfully registered", "user": user.to_dict()}, 201
 
         except Exception as e:
             return {"error": str(e)}, 500
+
 
 
 @user_ns.route('/login')
