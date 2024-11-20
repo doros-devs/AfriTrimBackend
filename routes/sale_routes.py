@@ -1,18 +1,21 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
-from app import db
-from models import Sale
-from datetime import datetime
+from services.sale_services import (
+    create_sale, update_sale, delete_sale,
+    get_total_sales, get_average_sale, get_all_sales
+)
+
 
 # Define Namespace
 sale_ns = Namespace('sales', description='Operations related to sales')
 
 # Define Swagger models for request validation
 sale_model = sale_ns.model('Sale', {
-    'customer_name': fields.String(required=True, description='Customer name'),
+    'client_id': fields.Integer(required=True, description='Client ID'),
     'barbershop_id': fields.Integer(required=True, description='Barbershop ID'),
-    'barber_id': fields.Integer(required=True, description='Barber ID'),
-    'invoice_id': fields.Integer(required=True, description='Invoice ID')
+    'invoice_id': fields.Integer(required=True, description='Invoice ID'),
+    'amount': fields.Float(required=True, description='Amount for the sale'),
+    'expense': fields.Float(required=True, description='Expense associated with the sale')
 })
 
 # SALE ROUTES
@@ -23,7 +26,7 @@ class SaleList(Resource):
         """
         Get all sales
         """
-        sales = Sale.query.all()
+        sales = get_all_sales()
         return [sale.to_dict() for sale in sales], 200
 
     @sale_ns.expect(sale_model)
@@ -33,15 +36,7 @@ class SaleList(Resource):
         Create a new sale
         """
         data = request.get_json()
-        sale = Sale(
-            customer_name=data.get('customer_name'),
-            barbershop_id=data.get('barbershop_id'),
-            barber_id=data.get('barber_id'),
-            invoice_id=data.get('invoice_id'),
-            sale_date=datetime.now()
-        )
-        db.session.add(sale)
-        db.session.commit()
+        sale = create_sale(data)
         return sale.to_dict(), 201
 
 @sale_ns.route('/<int:sale_id>')
@@ -53,17 +48,8 @@ class SaleResource(Resource):
         Update a sale by ID
         """
         data = request.get_json()
-        sale = Sale.query.get(sale_id)
+        sale = update_sale(sale_id, data)
         if sale:
-            if 'customer_name' in data:
-                sale.customer_name = data['customer_name']
-            if 'barbershop_id' in data:
-                sale.barbershop_id = data['barbershop_id']
-            if 'barber_id' in data:
-                sale.barber_id = data['barber_id']
-            if 'invoice_id' in data:
-                sale.invoice_id = data['invoice_id']
-            db.session.commit()
             return sale.to_dict(), 200
         return {'error': 'Sale not found'}, 404
 
@@ -72,9 +58,29 @@ class SaleResource(Resource):
         """
         Delete a sale by ID
         """
-        sale = Sale.query.get(sale_id)
+        sale = delete_sale(sale_id)
         if sale:
-            db.session.delete(sale)
-            db.session.commit()
             return {'message': 'Sale deleted successfully'}, 200
         return {'error': 'Sale not found'}, 404
+
+@sale_ns.route('/totals')
+class SaleTotals(Resource):
+    @sale_ns.doc('get_total_sales')
+    def get(self):
+        """
+        Get total sales, expenses, and profit
+        """
+        totals = get_total_sales()
+        return totals, 200
+
+@sale_ns.route('/average')
+class AverageSale(Resource):
+    @sale_ns.doc('get_average_sale')
+    def get(self):
+        """
+        Get the average sale amount
+        """
+        barbershop_id = request.args.get('barbershop_id', type=int)
+        barber_id = request.args.get('barber_id', type=int)
+        avg_sale = get_average_sale(barbershop_id=barbershop_id, barber_id=barber_id)
+        return {'average_sale': avg_sale}, 200

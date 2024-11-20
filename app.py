@@ -3,8 +3,6 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 from flask_restx import Api
-
-from auth_middleware import verify_token
 from firebase_utils import initialize_firebase
 from database import db
 
@@ -15,7 +13,7 @@ load_dotenv()
 def create_app():
     # Create the Flask app and initialize CORS
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
     # Configure the app using the settings from config.py
     app.config.from_object('config.Config')
@@ -59,12 +57,14 @@ def create_app():
     api.add_namespace(review_ns, path='/api/review')
     api.add_namespace(barber_ns, path='/api/barber')
     api.add_namespace(auth_ns, path='/api/auth')
-    api.add_namespace(user_ns, path='/users')
+    api.add_namespace(user_ns, path='/api/users')
 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization, X-Requested-With')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 
     # Add a basic route to check if the server is running
@@ -77,6 +77,5 @@ def create_app():
 # Run the application
 if __name__ == '__main__':
     app = create_app()
-
     # Run the server
     app.run(host='0.0.0.0', port=5555)
