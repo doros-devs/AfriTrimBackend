@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
-from services.client_service import get_barbershops, get_barbershop_details, create_appointment, update_appointment, get_services_by_barbershop
+from services.client_service import get_barbershops, get_barbershop_details, create_appointment, update_appointment, \
+    get_services_by_barbershop, update_client, delete_client, get_client_by_id, create_client
 from flask import request
 
 # Define Namespace
@@ -19,7 +20,61 @@ update_appointment_model = client_ns.model('UpdateAppointment', {
     'appointment_time': fields.String(required=True, description='Appointment time')
 })
 
+client_model = client_ns.model('Client', {
+    'uid': fields.String(required=True, description='Firebase UID'),
+    'name': fields.String(required=True, description='Client name'),
+    'email': fields.String(required=True, description='Client email'),
+    'phone_number': fields.String(description='Phone number'),
+    'photo_url': fields.String(description='Profile picture URL')
+})
+
 # Routes
+# Routes
+@client_ns.route('/')
+class ClientList(Resource):
+    @client_ns.expect(client_model)
+    @client_ns.doc('create_client')
+    def post(self):
+        """
+        Create a new client
+        """
+        data = request.get_json()
+        client = create_client(data)
+        return client.to_dict(), 201
+
+@client_ns.route('/<int:client_id>')
+class Client(Resource):
+    @client_ns.doc('get_client_by_id')
+    def get(self, client_id):
+        """
+        Get client details by ID
+        """
+        client = get_client_by_id(client_id)
+        if client:
+            return client.to_dict(), 200
+        return {'error': 'Client not found'}, 404
+
+    @client_ns.expect(client_model)
+    @client_ns.doc('update_client')
+    def put(self, client_id):
+        """
+        Update client details by ID
+        """
+        data = request.get_json()
+        client = update_client(client_id, data)
+        if client:
+            return client.to_dict(), 200
+        return {'error': 'Client not found'}, 404
+
+    @client_ns.doc('delete_client')
+    def delete(self, client_id):
+        """
+        Delete client by ID
+        """
+        if delete_client(client_id):
+            return {'message': 'Client deleted successfully'}, 200
+        return {'error': 'Client not found'}, 404
+
 @client_ns.route('/barbershops')
 class BarbershopList(Resource):
     @client_ns.doc('get_barbershops')
@@ -54,13 +109,12 @@ class Appointment(Resource):
         """
         data = request.get_json()
         appointment = create_appointment(
-            client_name=data.get('client_name'),
+            client_id=data.get('client_id'),
             barber_id=data.get('barber_id'),
             service_id=data.get('service_id'),
             appointment_time=data.get('appointment_time')
         )
         return appointment.to_dict(), 201
-
 
 @client_ns.route('/appointment/<int:appointment_id>')
 class UpdateAppointment(Resource):

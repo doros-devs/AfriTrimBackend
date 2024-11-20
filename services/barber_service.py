@@ -43,3 +43,20 @@ def delete_barber(barber_id):
         db.session.commit()
         return True
     return False
+
+# Get all barbers in a particular barbershop
+def get_barbers_by_barbershop(barbershop_id):
+    return Barber.query.filter_by(barbershop_id=barbershop_id).all()
+
+# Get all barbers by their availability status
+def get_barbers_by_availability(available):
+    return Barber.query.filter_by(available=available).all()
+
+# Get all reviews for a specific barber
+def get_reviews_for_barber(barber_id):
+    barber = Barber.query.get(barber_id)
+    return barber.reviews if barber else []
+
+# Search barbers by their name (case insensitive search)
+def search_barbers_by_name(name):
+    return Barber.query.filter(Barber.name.ilike(f'%{name}%')).all()

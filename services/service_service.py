@@ -30,4 +30,8 @@ def delete_service(service_id):
     if service:
         db.session.delete(service)
         db.session.commit()
-    return service
+        return True
+    return False
+
+def get_services_by_barbershop_id(barbershop_id):
+    return Service.query.filter_by(barbershop_id=barbershop_id).all()

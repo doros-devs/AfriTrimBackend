@@ -1,7 +1,6 @@
-from app import db
+from app import db, create_app
 from models import Admin, Client, Barber, Barbershop, Service, Review, Payment, Sale, Appointment, Invoice
 from datetime import datetime
-from app import db, create_app  # Import your Flask app factory function
 from faker import Faker
 import random
 
@@ -21,14 +20,29 @@ with app.app_context():
 
     # 1. Create Admins
     admins = [
-        Admin(uid=fake.uuid4(), name=fake.name(), email=f"admin{i}@afritrim.com") for i in range(3)
+        Admin(
+            uid=fake.uuid4(),
+            name=fake.name(),
+            email=f"admin{i}@afritrim.com",
+            is_active=True,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        ) for i in range(3)
     ]
     db.session.add_all(admins)
     db.session.commit()
 
     # 2. Create Clients
     clients = [
-        Client(uid=fake.uuid4(), name=fake.name(), email=fake.email(), phone_number=fake.phone_number()) for _ in range(10)
+        Client(
+            uid=fake.uuid4(),
+            name=fake.name(),
+            email=fake.email(),
+            phone_number=fake.phone_number(),
+            photo_url=fake.image_url(),
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        ) for _ in range(10)
     ]
     db.session.add_all(clients)
     db.session.commit()
@@ -41,7 +55,9 @@ with app.app_context():
             name=fake.company(),
             location=fake.address(),
             admin_id=random.choice(admins).id,  # Assign barbershop to a random admin
-            photo_url=fake.image_url()
+            photo_url=fake.image_url(),
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )
         db.session.add(barbershop)
         db.session.commit()  # Commit here to get the barbershop ID
@@ -54,7 +70,9 @@ with app.app_context():
                 name=fake.name(),
                 barbershop_id=barbershop.id,
                 available=random.choice([True, False]),
-                photo_url=fake.image_url()
+                photo_url=fake.image_url(),
+                created_at=datetime.now(),
+                updated_at=datetime.now()
             )
             barbers.append(barber)
 
@@ -69,7 +87,9 @@ with app.app_context():
                 name=fake.bs(),
                 price=random.randint(10, 100),
                 barbershop_id=barbershop.id,
-                photo_url=fake.image_url()
+                photo_url=fake.image_url(),
+                created_at=datetime.now(),
+                updated_at=datetime.now()
             )
             services.append(service)
 
@@ -96,9 +116,8 @@ with app.app_context():
     payments = []
     for _ in range(15):
         payment = Payment(
-            admin_id=random.choice(admins).id,  # Assign payment to a random admin
+            admin_id=random.choice(admins).id,
             amount=random.randint(50, 200),
-            paid_at=fake.date_time_this_year(),
             status=random.choice(['Pending', 'Completed', 'Failed'])
         )
         payments.append(payment)
@@ -106,21 +125,24 @@ with app.app_context():
     db.session.add_all(payments)
     db.session.commit()
 
-    # 7. Create Sales
+    # 7. Create Sales with Amount, Expense, and Profit
     sales = []
     for _ in range(10):
+        amount = random.uniform(50, 300)  # Random sale amount
+        expense = random.uniform(10, 100)  # Random expense
         sale = Sale(
             client_id=random.choice(clients).id,
             barbershop_id=random.choice(barbershops).id,
             invoice_id=None,  # Will be updated later when creating invoices
-            sale_date=fake.date_time_this_year()
+            amount=amount,
+            expense=expense,
         )
         sales.append(sale)
 
     db.session.add_all(sales)
     db.session.commit()
 
-    # 8. Create Appointments
+    # 8. Create Appointments with Status
     appointments = []
     for _ in range(15):
         appointment = Appointment(
@@ -128,6 +150,7 @@ with app.app_context():
             barber_id=random.choice(barbers).id,
             service_id=random.choice(services).id,
             appointment_time=fake.future_datetime(end_date="+30d"),
+            status=random.choice(['Scheduled', 'Completed', 'Cancelled']),  # Added status field
             created_at=datetime.now(),
             updated_at=datetime.now()
         )
@@ -142,7 +165,7 @@ with app.app_context():
         invoice = Invoice(
             client_id=sale.client_id,
             barbershop_id=sale.barbershop_id,
-            amount=random.uniform(50, 300),
+            amount=sale.amount,  # The invoice amount matches the sale amount
             status=random.choice(['Pending', 'Paid']),
             created_at=fake.date_time_this_year(),
             updated_at=fake.date_time_this_year()

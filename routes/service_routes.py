@@ -1,6 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
-from services.service_service import create_service, get_all_services, get_service_by_id, update_service, delete_service
+from services.service_service import create_service, get_all_services, get_service_by_id, update_service, \
+    delete_service, get_services_by_barbershop_id
 
 # Define Namespace
 service_ns = Namespace('services', description='Operations related to services')
@@ -12,6 +13,13 @@ service_model = service_ns.model('Service', {
     'barbershop_id': fields.Integer(required=True, description='Barbershop ID'),
     'photo_url': fields.String(description='URL of the service photo')
 })
+
+update_service_model = service_ns.model('UpdateService', {
+    'name': fields.String(description='Service name'),
+    'price': fields.Float(description='Service price'),
+    'photo_url': fields.String(description='URL of the service photo')
+})
+
 
 # Routes
 @service_ns.route('/')
@@ -51,7 +59,7 @@ class Service(Resource):
             return service.to_dict(), 200
         return {'error': 'Service not found'}, 404
 
-    @service_ns.expect(service_model)
+    @service_ns.expect(update_service_model)
     @service_ns.doc('update_service')
     def patch(self, service_id):
         """
@@ -75,3 +83,16 @@ class Service(Resource):
         if service:
             return {'message': 'Service deleted successfully'}, 200
         return {'error': 'Service not found'}, 404
+
+@service_ns.route('/barbershop/<int:barbershop_id>')
+class ServicesByBarbershop(Resource):
+    @service_ns.doc('get_services_by_barbershop_id')
+    def get(self, barbershop_id):
+        """
+        Get all services for a specific barbershop
+        """
+        services = get_services_by_barbershop_id(barbershop_id)
+        if services:
+            return [service.to_dict() for service in services], 200
+        return {'error': 'No services found for this barbershop'}, 404
+

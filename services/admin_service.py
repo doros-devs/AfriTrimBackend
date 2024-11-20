@@ -1,8 +1,40 @@
-from models import Barbershop, Payment, Barber, Service, Appointment, Sale, Review, Invoice, Client
+from models import Barbershop, Payment, Barber, Service, Appointment, Sale, Review, Invoice, Client, Admin
 from app import db
 from datetime import datetime
 
 # Utility function for updating entity attributes
+def create_admin(data):
+    admin = Admin(
+        uid=data.get('uid'),
+        name=data.get('name'),
+        email=data.get('email'),
+        is_active=True,
+        created_at=datetime.now()
+    )
+    db.session.add(admin)
+    db.session.commit()
+    return admin
+
+def suspend_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    if admin:
+        admin.is_active = False
+        db.session.commit()
+        return admin
+    return None
+
+def delete_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    if admin:
+        db.session.delete(admin)
+        db.session.commit()
+        return True
+    return False
+
+def get_admin_by_id(admin_id):
+    return Admin.query.get(admin_id)
+
+
 def update_entity(entity, data):
     for key, value in data.items():
         if hasattr(entity, key):
