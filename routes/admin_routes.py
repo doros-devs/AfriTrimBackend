@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from auth_middleware import admin_required
 from app import db
 from models import Barbershop, Service, Barber, Invoice
 from services.admin_service import (
